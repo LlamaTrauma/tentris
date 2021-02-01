@@ -13,7 +13,6 @@ class Piece{
         this.height = this.tiles.length;
         this.onBoard = false;
         this.rotations = [];
-        this.currentRotationOffset = [0, 0];
         this.rotationOffsets = [];
         this.timesRotated = 0;
         for(var i = 0; i < 4; i ++){
@@ -41,16 +40,26 @@ class Piece{
             for(var j = 0; j < this.height; j ++){
                 for(var k = 0; k < this.width; k ++){
                     if(this.tiles[j][k] == 1){
-                        var newPosition = rotateAroundPoint(k, j, Math.floor((this.width - 1) / 2), Math.floor((this.height - 1) / 2), i);
+                        var newPosition = rotateAroundPoint(k, j, (this.width - 1) / 2, (this.height - 1) / 2, i);
                         newPositions.push(newPosition);
+                        //console.log(newPosition);
                         this.rotationOffsets[i][0] = Math.min(newPosition[0], this.rotationOffsets[i][0]);
                         this.rotationOffsets[i][1] = Math.min(newPosition[1], this.rotationOffsets[i][1]);
                     }
                 }
             }
+            console.log("rot: " + i);
+            console.log("width: " + this.width);
+            console.log("height: " + this.height);
             for(var j = 0; j < newPositions.length; j ++){
+                console.log("y: " + (newPositions[j][1] - this.rotationOffsets[i][1]) * 2 / 2);
+                console.log("x: " + (newPositions[j][0] - this.rotationOffsets[i][0]) * 2 / 2);
                 this.rotations[i][newPositions[j][1] - this.rotationOffsets[i][1]][newPositions[j][0] - this.rotationOffsets[i][0]] = 1;
             }
+        }
+        for(var i = 0; i < this.rotationOffsets.length; i ++){
+            this.rotationOffsets[i][0] = Math.floor(this.rotationOffsets[i][0]);
+            this.rotationOffsets[i][1] = Math.floor(this.rotationOffsets[i][1]);
         }
     }
 
@@ -162,9 +171,8 @@ class Piece{
         if(this.timesRotated == -1){
             this.timesRotated = 3;
         }
-        var newPiece = new Piece(this.rotations[this.timesRotated % 4], this.gamewidth, this.gameheight, this.x + this.rotationOffsets[this.timesRotated % 4][0] - this.currentRotationOffset[0], this.y + this.rotationOffsets[this.timesRotated % 4][1] - this.currentRotationOffset[1], this.color);
+        var newPiece = new Piece(this.rotations[this.timesRotated % 4], this.gamewidth, this.gameheight, this.x + this.rotationOffsets[this.timesRotated % 4][0] - this.rotationOffsets[(this.timesRotated + 3) % 4][0], this.y + this.rotationOffsets[this.timesRotated % 4][1] - this.rotationOffsets[(this.timesRotated + 3) % 4][1], this.color);
         if(!newPiece.hitsAnything(board)){
-            this.currentRotationOffset = [this.rotationOffsets[this.timesRotated % 4][0], this.rotationOffsets[this.timesRotated % 4][1]];
             this.width = newPiece.width;
             this.height = newPiece.height;
             this.tiles = newPiece.tiles;
