@@ -1,6 +1,9 @@
 <link rel = "stylesheet" href = "style.css">
 
 <body>
+    <span nowrap>
+    <div id = "leftdiv">
+    <div id = "inputs">
     <h1>
         (Up To) Tentris
     </h1>
@@ -8,9 +11,23 @@
         X movement with left/right arrows<br>
         Fast fall with down arrow<br>
         Rotate with a/d<br>
-        Hold with s
+        Hold with s<br>
+        <br>
+        A piece size of 10 may need<br>to calculate for a few seconds
     </p>
-    <canvas id = "tetrisCanvas"></canvas>
+    <label>Piece Size: </label>
+    <input type = "number" id = "piecesize" value = 4>
+    <br>
+    <button id = "startBtn">Start</button>
+    </div>
+    </div>
+    <div id = "rightdiv">
+        <canvas id = "tetrisCanvas"></canvas>
+    </div>
+    <div id = "righterdiv">
+        
+    </div>
+    </span>
     <script src = "helper.js"></script>
     <script src = "tetromino.js"></script>
     <script src = "board.js"></script>
