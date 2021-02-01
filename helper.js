@@ -1,9 +1,7 @@
 var allPieces = [];
 
 var size = 11;
-while(size > 10){
-    size = prompt("Enter a piece size (1-10)\n10 may take a few seconds to compute.");
-}
+
 var linesCleared = 0;
 
 function rotateAroundPoint(px, py, ax, ay, dir){
@@ -36,7 +34,9 @@ function drawPieces(pieces){
     }
 }
 
-function findTiles(){
+var findingTiles = [[[[1]]], [[[1, 1]]]];
+
+function findTiles(size){
     function tilesEqual(a, b){
         if(!((a.length == b.length && a[0].length == b[0].length) || (a.length == b[0].length && a[0].length == b.length))){  
             return false;
@@ -82,20 +82,19 @@ function findTiles(){
         }
         return false;
     }
-    var tiles = [[[[1]]], [[[1, 1]]]];
-    for(var i = 2; i < size; i ++){
-        tiles.push([]);
+    for(var i = findingTiles.length - 1; i < size; i ++){
+        findingTiles.push([]);
         var initial = "";
-        for(var j = 0; j < tiles[i - 1].length; j ++){
-            for(var k = 0; k < tiles[i - 1][j].length; k ++){
-                for(var l = 0; l < tiles[i - 1][j][k].length; l ++){
-                    if(tiles[i - 1][j][k][l] == 1){
+        for(var j = 0; j < findingTiles[i - 1].length; j ++){
+            for(var k = 0; k < findingTiles[i - 1][j].length; k ++){
+                for(var l = 0; l < findingTiles[i - 1][j][k].length; l ++){
+                    if(findingTiles[i - 1][j][k][l] == 1){
                         for(var m = -1; m < 2; m ++){
                             for(var n = -1; n < 2; n ++){
-                                if(m != n && m + n != 0 && (k + m < 0 || k + m == tiles[i - 1][j].length || l + n < 0 || l + n ==  tiles[i - 1][j][k + m].length || tiles[i - 1][j][k + m][l + n] == 0)){
+                                if(m != n && m + n != 0 && (k + m < 0 || k + m == findingTiles[i - 1][j].length || l + n < 0 || l + n ==  findingTiles[i - 1][j][k + m].length || findingTiles[i - 1][j][k + m][l + n] == 0)){
                                     var newTile = [];
-                                    for(var o = 0; o < tiles[i - 1][j].length; o ++){
-                                        newTile.push(tiles[i - 1][j][o].map((x) => x));
+                                    for(var o = 0; o < findingTiles[i - 1][j].length; o ++){
+                                        newTile.push(findingTiles[i - 1][j][o].map((x) => x));
                                     }
                                     var xdiff = 0;
                                     var ydiff = 0;
@@ -104,7 +103,7 @@ function findTiles(){
                                             newTile[p].unshift(0);
                                         }
                                         xdiff = 1;
-                                    } else if(l + n > tiles[i - 1][j][0].length - 1) {
+                                    } else if(l + n > findingTiles[i - 1][j][0].length - 1) {
                                         for(var p = 0; p < newTile.length; p ++){
                                             newTile[p].push(0);
                                         }
@@ -116,19 +115,19 @@ function findTiles(){
                                     if(k + m < 0){
                                         newTile.unshift(addy);
                                         ydiff = 1;
-                                    } else if(k + m > tiles[i - 1][j].length - 1) {
+                                    } else if(k + m > findingTiles[i - 1][j].length - 1) {
                                         newTile.push(addy);
                                     }
                                     newTile[k + m + ydiff][l + n + xdiff] = 1;
                                     var o = 0;
-                                    for(o = 0; o < tiles[i].length; o ++){
-                                        if(tilesEqual(tiles[i][o], newTile)){
-                                            o = tiles[i].length + 1;
+                                    for(o = 0; o < findingTiles[i].length; o ++){
+                                        if(tilesEqual(findingTiles[i][o], newTile)){
+                                            o = findingTiles[i].length + 1;
                                             break;
                                         }
                                     }
-                                    if(o < tiles[i].length + 1){
-                                        tiles[i].push(newTile);
+                                    if(o < findingTiles[i].length + 1){
+                                        findingTiles[i].push(newTile);
                                     }
                                 }
                             }
@@ -139,17 +138,17 @@ function findTiles(){
         }
     }
     /*var returnTiles = [];
-    for(var i = 0; i < tiles[size - 1].length; i ++){
+    for(var i = 0; i < findingTiles[size - 1].length; i ++){
         returnTiles.push([]);
-        for(var j = 0; j < tiles[size - 1][i].length; j ++){
-            for(var k = 0; k < tiles[size - 1][i][j].length; k ++){
-                if(tiles[size - 1][i][j][k] == 1){
+        for(var j = 0; j < findingTiles[size - 1][i].length; j ++){
+            for(var k = 0; k < findingTiles[size - 1][i][j].length; k ++){
+                if(findingTiles[size - 1][i][j][k] == 1){
                     returnTiles[returnTiles.length - 1].push([k, j]);
                 }
             }
         }
     }*/
-    return tiles[size - 1];
+    return findingTiles[size - 1];
 }
 
 function containsArray(container, containee){
@@ -167,7 +166,7 @@ function containsArray(container, containee){
     return false;
 }
 
-/*function findRotations(tiles){
+/*function findRotations(findingTiles){
     var allPaths = [];
     var path = [[0, 0]];
     var sides = [[0, 1], [1, 0], [0, -1], [-1, 0]];
@@ -205,11 +204,11 @@ function containsArray(container, containee){
             }
             choices[pathIndex] += 1;
             pathIndex += 1;
-            if(effectiveLength >= tiles){
+            if(effectiveLength >= findingTiles){
                 //Make a copy so it's not pushing a reference
                 allPaths.push(path.map((x) => x));
                 removeTile();
-            } else if(pathIndex > tiles * 2){
+            } else if(pathIndex > findingTiles * 2){
                 console.log("pathIndex too high");
                 choices[pathIndex] = 0;
                 removeTile();
