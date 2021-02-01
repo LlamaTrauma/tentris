@@ -14,8 +14,11 @@ var Game = {
     widthpx: 0,
     heightpx: 0,
     cwidth: 0,
-    piecePool: findTiles(this.size),
+    piecePool: [],
     board: 0,
+    setInterval: null,
+    over: false,
+    runInterval: null,
     scale: Math.floor(500 / this.width),
     drawPool: function (){
         drawPieces(this.piecePool);
@@ -24,6 +27,10 @@ var Game = {
         return new Piece(this.piecePool[Math.floor(Math.random() * this.piecePool.length)], this.width, this.height);
     },
     start: function(){
+        this.over = false;
+        this.width = Math.floor(this.size * 5 / 2);
+        this.height = this.size * 5;
+        this.piecePool = findTiles(this.size);
         //this.width = 4;
         canvas.height = 1000;
         canvas.width = 1000 * this.width / this.height + 300;
@@ -36,6 +43,8 @@ var Game = {
         this.heightpx = bounding.height;
         this.board = new Board(this.width, this.height);
         this.currentPiece = this.makeRandomPiece();
+        this.nextPieces = [];
+        this.heldPiece = null;
         for(var i = 0; i < 3; i ++){
             this.nextPieces.push(this.makeRandomPiece());
         }
@@ -43,6 +52,12 @@ var Game = {
     giveNextPiece: function(){
         var nextPiece = this.nextPieces.shift();
         this.currentPiece = new Piece(nextPiece.tiles, this.width, this.height);
+        if(this.currentPiece.hitsAnything(this.board)){
+            this.over = true;
+            clearInterval(this.stepInterval);
+            clearInterval(this.runInterval);
+            return;
+        }
         this.currentPiece.color = nextPiece.color;
         this.nextPieces.push(this.makeRandomPiece());
     },
@@ -50,6 +65,9 @@ var Game = {
         this.currentPiece.step(this.board);
         if(this.currentPiece.onBoard){
             this.giveNextPiece();
+            if(this.over){
+                return;
+            }
             this.board.determineTetris();
         }
     }, run: function (){
@@ -81,11 +99,7 @@ var Game = {
     }
 }
 
-Game.start();
-setInterval(function(){Game.step()}, 400);
-setInterval(function(){Game.run()}, 33);
-
-document.addEventListener("keydown", function (e) {
+var keyFun = function (e) {
     if (e.key === "ArrowLeft") {
         Game.currentPiece.moveX(-1, Game.board);
     } else if (e.key === "ArrowRight") {
@@ -110,4 +124,19 @@ document.addEventListener("keydown", function (e) {
             Game.giveNextPiece();
         }
     }
-  });
+}
+
+document.getElementById("startBtn").onclick = function(e){
+    size = Math.max(0, Math.min(document.getElementById("piecesize").value, 10));
+    Game.size = size;
+    Game.start();
+    clearInterval(Game.stepInterval);
+    clearInterval(Game.runInterval);
+    Game.stepInterval = setInterval(function(){Game.step()}, 400);
+    Game.runInterval = setInterval(function(){Game.run()}, 33);
+
+    document.removeEventListener("keydown", keyFun);
+
+
+    document.addEventListener("keydown", keyFun);
+}
