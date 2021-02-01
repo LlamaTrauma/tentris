@@ -1,11 +1,23 @@
 canvas {
+    position: absolute;
+    transform: translateY(-50%) translateX(-50%);
+    top: 50%;
+    left: 50%;
     border: 20px solid rgba(200, 200, 200, 100);
+    margin: auto;
+    z-index: 100;
+}
+
+body {
+    background-color: bisque;
 }
 
 body * {
     margin: 0 auto;
     display: block;
     text-align: center;
+    overflow: hidden;
+    white-space: nowrap;
 }
 
 p {
@@ -13,7 +25,59 @@ p {
     margin-bottom: 20px;
 }
 
+label {
+    display: inline;
+    font-size: 20px;
+}
+
+input {
+    width: 50px;
+    height: 25px;
+    font-size: 20px;
+    display: inline;
+    border: 3px solid black;
+    border-radius: 3px;
+}
+
+button {
+    width: 100px;
+    height: 50px;
+    margin-top: 20px;
+    font-size: 30px;
+}
+
 h1 {
     font-size: 40px;
     margin-bottom: 20px;
+}
+
+#inputs {
+    position: absolute;
+    transform: translateY(-50%) translateX(-50%);
+    top: 50%;
+    left: 50%;
+}
+
+#leftdiv {
+    position: relative;
+    width: 30%;
+    height: 100%;
+    display: inline-block;
+    background-color: bisque;
+}
+
+#rightdiv {
+    position: relative;
+    z-index: 2;
+    width: 40%;
+    height: 100%;
+    display: inline-block;
+    background-color: rgb(255, 223, 162);
+    overflow: visible;
+}
+#righterdiv {
+    position: relative;
+    width: 30%;
+    height: 100%;
+    display: inline-block;
 }
